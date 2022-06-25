@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 // The ViewModel it self does not know of any Views.
 
 // The constructor takes a repository of type MealsRepository, and set the default value to MealsRepository
-class MealsCategoriesViewModel(private val repository: MealsRepository = MealsRepository() ): ViewModel() {
+class MealsCategoriesViewModel(private val repository: MealsRepository = MealsRepository.getInstance()): ViewModel() {
 
 
 //	// we dont use this anymore, Instead we use viewModel.scope

@@ -32,7 +32,7 @@ import eu.example.mymealz.ui.theme.MyMealzTheme
 // We should not have any logic in this @composable, besides UI logic -
 // which we should also seek to put into the ViewModel
 @Composable
-fun MealsCategoriesScreen() {
+fun MealsCategoriesScreen(navigationCallback: (String) -> Unit) {
 
 	// Instantiating a viewModel object from the ViewModel class
 	// So it now holds a reference to the viewModel
@@ -40,7 +40,12 @@ fun MealsCategoriesScreen() {
 	// So the viewModel only lives as long as this composable view does.
 	val viewModel: MealsCategoriesViewModel = viewModel()
 	val meals = viewModel.mealsState.value
-
+	LazyColumn(contentPadding = PaddingValues(16.dp)) {
+		items(meals) { meal ->
+			// recomposes when the state value change
+			MealCategory(meal, navigationCallback)
+		}
+	}
 
 	// This was used for running the Coroutines directly in the composable screen
 	// that is bad practise - its better to run it in the viewModel
@@ -55,17 +60,10 @@ fun MealsCategoriesScreen() {
 //			rememberedMeals.value = meals
 //		}
 //	}
-
-	LazyColumn(contentPadding = PaddingValues(16.dp)) {
-		items(meals) { meal ->
-			// recomposes when the state value change
-			MealCategory(meal)
-		}
-	}
 }
 
 @Composable
-fun MealCategory(meal: MealResponse) {
+fun MealCategory(meal: MealResponse, navigationCallback: (String) -> Unit) {
 
 	// At default the details will not be expanded.
 	var isExpanded by remember {
@@ -78,6 +76,8 @@ fun MealCategory(meal: MealResponse) {
 		modifier = Modifier
 			.fillMaxWidth()
 			.padding(top = 16.dp)
+			.clickable {
+				navigationCallback(meal.id) }
 	) {
 		Row(modifier = Modifier.animateContentSize()) {
 
@@ -131,6 +131,6 @@ fun MealCategory(meal: MealResponse) {
 @Composable
 fun DefaultPreview() {
 	MyMealzTheme {
-		MealsCategoriesScreen()
+		MealsCategoriesScreen({})
 	}
 }
