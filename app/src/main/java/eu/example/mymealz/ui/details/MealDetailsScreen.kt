@@ -7,16 +7,12 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.Colors
-import androidx.compose.material.Text
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,67 +21,74 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import eu.example.model.response.MealResponse
+import kotlin.math.min
 
 // Detail Screen - This is a view part of MVVM
 
 @Composable
 fun MealDetailsScreen(meal: MealResponse?) {
 
-	// Holds the state of the picture color, width an size
-	var profilePictureState by remember {
-		mutableStateOf(MealProfilePictureState.Normal)
-	}
+	val scrollState = rememberScrollState()
+	val offSet = min(1f, 1-(scrollState.value / 600f))
+	val size by animateDpAsState(targetValue = max(100.dp, 200.dp *offSet))
 
-	val transition = updateTransition(targetState = profilePictureState, label = "")
-
-	val imageSizeDp by transition.animateDp(targetValueByState = { it.size }, label = "")
-	val color by transition.animateColor(targetValueByState = { it.color }, label = "")
-	val widthSize by transition.animateDp(targetValueByState = { it.borderWidth }, label = "")
-
-
-	Column() {
-		Row() {
-			Card(
-				modifier = Modifier.padding(16.dp),
-				shape = CircleShape,
-				border = BorderStroke(
-					width = widthSize,
-					color = color
-				)
-			) {
-				Image(
-					painter = rememberImagePainter(data = meal?.imageUrl,
-						builder = {
-							transformations(CircleCropTransformation())
-						}),
-					contentDescription = null,
-					modifier = Modifier
-						.size(imageSizeDp)
-						.padding(8.dp)
-				)
+	Surface(color = MaterialTheme.colors.background) {
+		Column() {
+			Surface(elevation = 4.dp) {
+				Row(modifier = Modifier.fillMaxWidth()) {
+					Card(
+						modifier = Modifier.padding(16.dp),
+						shape = CircleShape,
+						border = BorderStroke(
+							width = 2.dp,
+							color = Color.Green
+						)
+					) {
+						Image(
+							painter = rememberImagePainter(data = meal?.imageUrl,
+								builder = {
+									transformations(CircleCropTransformation())
+								}),
+							contentDescription = null,
+							modifier = Modifier
+								.size(size)
+						)
+					}
+					Text(
+						text = meal?.name ?: "default name",
+						modifier = Modifier
+							.padding(16.dp)
+							.align(Alignment.CenterVertically)
+					)
+				}
 			}
-			Text(
-				text = meal?.name ?: "default name",
-				modifier = Modifier
-					.padding(16.dp)
-					.align(Alignment.CenterVertically)
-			)
-		}
-		Button(
-			modifier = Modifier
-				.padding(16.dp),
-			onClick = {
-				profilePictureState = if (profilePictureState == MealProfilePictureState.Normal)
-					MealProfilePictureState.Expanded
-				else
-					MealProfilePictureState.Normal
-			}) {
-			Text(text = "Change state of meal profile picture")
+
+			val holiday = listOf<String>("Tenerife", "Thailand", "Berlin") 
+			// Using the scrollState
+			Column(modifier = Modifier.verticalScroll(scrollState)) {
+				
+				for (i in holiday){
+					Text(text = "Holliday to $i", modifier = Modifier.padding(32.dp))
+				}
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+				Text(text = "This is a Text element", modifier = Modifier.padding(32.dp))
+			}
+
 		}
 	}
+
+
 }
 
 // Using this to define state for when picture is normal or expanded
